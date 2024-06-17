@@ -3,7 +3,7 @@ import os
 VERSION = "v2.0.0"
 
 # Download interval (seconds)
-Interval = "3"
+Interval = "5"
 # Download timeout (seconds)
 WaitTime = "5"
 

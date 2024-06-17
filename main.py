@@ -16,7 +16,7 @@ if __name__ == "__main__":
     browse : core.Browse
 
     print("=======================================")
-    print("欢迎使用论文批量下载器 PaperDownloader！")
+    print("欢迎使用论文批量下载器 PaperDownloader！\n程序开始运行后，将会自动跳转到知网。请不要操作下载文件夹。")
     print(f"当前版本: {config.VERSION}")
     print("=======================================")
 
@@ -48,9 +48,10 @@ if __name__ == "__main__":
         time.sleep(1)
     print()
     browse.open()
+    browse.driver().get("https://www.cnki.net/")
     print("=======================================")
     input(
-        "请登录数据库网站进行内容检索, 在需要下载的论文前面打上勾，完成后输入回车键开始下载"
+        "请登录数据库网站进行内容检索，完成后输入回车键开始下载。脚本将自动下载当前页的所有搜索结果，并前往下一页继续下载。"
     )
     print("=======================================")
     core.download(browse.driver(), browse.name)
