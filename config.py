@@ -5,7 +5,7 @@ VERSION = "v2.0.0"
 # Download interval (seconds)
 Interval = "6"
 # Download timeout (seconds)
-WaitTime = "6"
+WaitTime = "10"
 
 # Chrome
 ChromeName = "Google Chrome"

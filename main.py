@@ -21,6 +21,8 @@ if __name__ == "__main__":
     print("=======================================")
 
     # 选择浏览器
+    ###
+    '''
     print("请选择使用的浏览器:")
     print(f"1: {config.ChromeName}")
     print(f"2: {config.EdgeName}")
@@ -33,7 +35,8 @@ if __name__ == "__main__":
         case 2:
             print("使用浏览器: Microsoft Edge")
             browse = core.Edge()
-
+    '''
+    browse = core.Edge()
     # 检查 webdriver
     print("=======================================")
     print("查找可执行文件......", end="")

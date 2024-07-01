@@ -133,7 +133,7 @@ def download(driver: webdriver, browse_name: str):
                 shutil.move(file_path, papers_dir)
         if hit:
             # fmt: off
-            print(f"下载完成, 共找到 {check_count} 处勾选, 成功下载 {download_count} 项内容。")
+            print(f"下载完成, 共找到 {check_count} 处下载任务, 成功下载 {download_count} 项内容。")
             # print(f"文件保存位置: {os.path.join(os.environ['USERPROFILE'], 'Downloads')}")
             print(f"文件保存位置: {papers_dir}")
             # fmt: on
