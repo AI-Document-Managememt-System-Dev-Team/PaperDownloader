@@ -3,9 +3,9 @@ import os
 VERSION = "v2.0.0"
 
 # Download interval (seconds)
-Interval = "5"
+Interval = "6"
 # Download timeout (seconds)
-WaitTime = "5"
+WaitTime = "6"
 
 # Chrome
 ChromeName = "Google Chrome"

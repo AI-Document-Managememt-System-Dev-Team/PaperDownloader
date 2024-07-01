@@ -148,6 +148,7 @@ def cnki(driver: webdriver, browse_name: str, save: save_info):
         By.TAG_NAME, "tbody"
     )
     rows = result.find_elements(By.TAG_NAME, "tr")
+    print(f"rows = {rows}")
     for i in range(len(rows)):
         # Determine if selected
         # if not rows[i].find_element(By.CLASS_NAME, "cbItem").is_selected():
@@ -156,7 +157,6 @@ def cnki(driver: webdriver, browse_name: str, save: save_info):
         print("正在下载第", i + 1, "项……")
         check_count += 1
         current_window_number = len(driver.window_handles)
-
         rows[i].find_element(By.CLASS_NAME, "fz14").click()
         WebDriverWait(driver, int(config.WaitTime)).until(
             EC.number_of_windows_to_be(current_window_number + 1)
@@ -180,7 +180,13 @@ def cnki(driver: webdriver, browse_name: str, save: save_info):
             print("错误：关键词加载超时，或者没有关键词。\n")
         save.update_entry(*webpage_info.extract_info(driver))
         try:
-            download_button = driver.find_element(By.ID, "pdfDown")
+            # Wait for the page to finish loading
+            WebDriverWait(driver, 10).until(lambda d: d.execute_script('return document.readyState') == 'complete')
+            wait = WebDriverWait(driver, 10)
+            download_button = wait.until(EC.element_to_be_clickable((By.ID, 'pdfDown')))
+            driver.execute_script("window.scrollBy(0, 250);")
+            time.sleep(1)
+            # download_button = driver.find_element(By.ID, "pdfDown")
         except exceptions.NoSuchElementException:
             name = rows[i].find_element(By.CLASS, "wx-tit").text
             print(f"错误：不能下载 {name}\n。")
@@ -215,12 +221,17 @@ def cnki(driver: webdriver, browse_name: str, save: save_info):
         if next_page_link:
             # 点击“下一页”按钮
             next_page_link.click()
+            time.sleep(int(config.Interval))
             # 等待页面加载
             WebDriverWait(driver, int(config.WaitTime)).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "result-table-list"))
             )
             # 递归调用cnki函数处理新页面的内容
-            cnki(driver, browse_name, save)
+            all_handles = driver.window_handles
+            for handle in all_handles:
+                driver.switch_to.window(handle)
+                if driver.title == "检索-中国知网" or driver.title == "高级检索-中国知网":
+                    cnki(driver, browse_name, save)
     except exceptions.NoSuchElementException:
         print("已经是最后一页。")
     except exceptions.TimeoutException:
