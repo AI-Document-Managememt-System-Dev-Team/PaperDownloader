@@ -9,6 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common import exceptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+import os
 
 def input_int() -> int:
     while True:
@@ -60,6 +61,9 @@ if __name__ == "__main__":
     names=s.split(',')
     for name in names:
         try:
+            if os.path.exists(os.path.join("data",name)):
+                print(name,"的文章已经收集，跳过")
+                continue
             browse.driver().get("https://kns.cnki.net/kns8s/AdvSearch?classid=WD0FTY92")
             time.sleep(3) 
             driver=browse.driver()
@@ -73,6 +77,14 @@ if __name__ == "__main__":
             autor_university.send_keys("复旦大学")
             autor_university.send_keys(Keys.RETURN)
             time.sleep(3) 
-            core.download(browse.driver(), browse.name,name)
+            download_count=core.download(browse.driver(), browse.name,name)
+            if download_count is None:
+                download_count=0
+            print(name,"的文章已经全部收集")
+            time.sleep(download_count*10)
         except:
             print("没有找到复旦大学",name)
+            downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+            papers_dir = os.path.join("data",os.path.join(name,'papers'))
+            s="move "+downloads_path+"\\* "+papers_dir
+            os.system(s)

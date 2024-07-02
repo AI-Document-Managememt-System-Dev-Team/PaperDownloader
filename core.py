@@ -100,8 +100,8 @@ def download(driver: webdriver, browse_name: str,author_name:str=""):
     global download_count, check_count
     download_count = 0
     check_count = 0
-    papers_dir = os.path.join(author_name,'papers')
-    save = save_info.TXTInfo(folder=os.path.join(author_name,'information'))
+    papers_dir = os.path.join("data",os.path.join(author_name,'papers'))
+    save = save_info.TXTInfo(folder=os.path.join("data",os.path.join(author_name,'information')))
     if not os.path.exists(papers_dir):
         os.makedirs(papers_dir)
     if driver is None:
@@ -127,15 +127,18 @@ def download(driver: webdriver, browse_name: str,author_name:str=""):
                     wanfang(driver)
                     hit = True
         downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
-        for filename in os.listdir(downloads_path):
-            file_path = os.path.join(downloads_path, filename)
-            if filename.endswith('.pdf') and datetime.datetime.fromtimestamp(os.path.getctime(file_path)) > start_time:
-                shutil.move(file_path, papers_dir)
+        s="move "+downloads_path+"\\* "+papers_dir
+        os.system(s)
+        # for filename in os.listdir(downloads_path):
+        #     file_path = os.path.join(downloads_path, filename)
+        #     if filename.endswith('.pdf') and datetime.datetime.fromtimestamp(os.path.getctime(file_path)) > start_time:
+        #         shutil.move(file_path, papers_dir)
         if hit:
             # fmt: off
             print(f"下载完成, 共找到 {check_count} 处下载任务, 成功下载 {download_count} 项内容。")
             # print(f"文件保存位置: {os.path.join(os.environ['USERPROFILE'], 'Downloads')}")
             print(f"文件保存位置: {papers_dir}")
+            return download_count
             # fmt: on
         else:
             print("错误：没有找到符合的检索页面\n")
@@ -181,22 +184,26 @@ def cnki(driver: webdriver, browse_name: str, save: save_info):
             WebDriverWait(driver, 10).until(lambda d: d.execute_script('return document.readyState') == 'complete')
             wait = WebDriverWait(driver, 10)
             download_button = wait.until(EC.element_to_be_clickable((By.ID, 'pdfDown')))
+            download_button.click()
             driver.execute_script("window.scrollBy(0, 250);")
             time.sleep(1)
             # download_button = driver.find_element(By.ID, "pdfDown")
-        except exceptions.NoSuchElementException:
-            name = rows[i].find_element(By.CLASS, "wx-tit").text
-            print(f"错误：不能下载 {name}\n。")
+        except :
+            print(f"错误：不能下载 {driver.title}\n。")
             continue
         finally:
             current_window_number = len(driver.window_handles)
-            download_button.click()
             # edge 的 webdriver 有问题，页面关闭后数量不减
             if browse_name == config.EdgeName:
                 time.sleep(int(config.Interval))
+                current_window_number = len(driver.window_handles)
                 driver.close()
+                WebDriverWait(driver, int(config.WaitTime)).until(
+                    EC.number_of_windows_to_be(current_window_number - 1)
+                )
                 driver.switch_to.window(index_window)
                 download_count += 1
+                time.sleep(int(config.Interval))
             else:
                 try:
                     WebDriverWait(driver, int(config.WaitTime)).until(
@@ -228,6 +235,7 @@ def cnki(driver: webdriver, browse_name: str, save: save_info):
             for handle in all_handles:
                 driver.switch_to.window(handle)
                 if driver.title == "检索-中国知网" or driver.title == "高级检索-中国知网":
+                    time.sleep(60)
                     cnki(driver, browse_name, save)
     except exceptions.NoSuchElementException:
         print("已经是最后一页。")
