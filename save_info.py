@@ -9,6 +9,14 @@ class TXTInfo:
 
     # 插入或更新文本文件的函数
     def update_entry(self, name, abstract, keywords, site):
+        name=name.replace('/','_')
+        name=name.replace('\\','_')
+        name=name.replace(':','_')
+        name=name.replace('?','_')
+        name=name.replace('\"','_')
+        name=name.replace('<','_')
+        name=name.replace('>','_')
+        name=name.replace('|','_')
         file_path = os.path.join(self.folder, f"{name}.txt")
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(f"{abstract}\n{keywords}\n{site}")
