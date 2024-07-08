@@ -60,15 +60,20 @@ if __name__ == "__main__":
     s=f.readline()
     names=s.split(',')
     for name in names:
-        try:
+        # try:
             if os.path.exists(os.path.join("data",name)):
                 print(name,"的文章已经收集，跳过")
                 continue
             browse.driver().get("https://kns.cnki.net/kns8s/AdvSearch?classid=WD0FTY92")
-            time.sleep(3) 
             driver=browse.driver()
+            WebDriverWait(driver, int(config.WaitTime)).until(
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="ModuleSearch"]/div[1]/div/div[2]/ul/li[3]'))
+            )
             search_option = driver.find_element(By.XPATH, '//*[@id="ModuleSearch"]/div[1]/div/div[2]/ul/li[3]')
             search_option.click()
+            WebDriverWait(driver, int(config.WaitTime)).until(
+                EC.visibility_of_element_located((By.XPATH, '//*[@id="autxt"]/dd[1]/div[2]/input'))
+            )
             autor_name=driver.find_element(By.XPATH, '//*[@id="autxt"]/dd[1]/div[2]/input')
             autor_name.clear()
             autor_name.send_keys(name)
@@ -76,15 +81,15 @@ if __name__ == "__main__":
             autor_university.clear()
             autor_university.send_keys("复旦大学")
             autor_university.send_keys(Keys.RETURN)
-            time.sleep(3) 
-            download_count=core.download(browse.driver(), browse.name,name)
-            if download_count is None:
-                download_count=0
+            # time.sleep(3) 
+            # download_count=core.download(browse.driver(), browse.name,name)
+            # if download_count is None:
+            #     download_count=0
             print(name,"的文章已经全部收集")
-            time.sleep(download_count*10)
-        except:
-            print("没有找到复旦大学",name)
-            downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
-            papers_dir = os.path.join("data",os.path.join(name,'papers'))
-            s="move "+downloads_path+"\\* "+papers_dir
-            os.system(s)
+            # time.sleep(download_count*10)
+        # except:
+        #     print("没有找到复旦大学",name)
+        #     downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+        #     papers_dir = os.path.join("data",os.path.join(name,'papers'))
+        #     s="move "+downloads_path+"\\* "+papers_dir
+        #     os.system(s)
