@@ -60,7 +60,7 @@ if __name__ == "__main__":
     s=f.readline()
     names=s.split(',')
     for name in names:
-        # try:
+        try:
             if os.path.exists(os.path.join("data",name)):
                 print(name,"的文章已经收集，跳过")
                 continue
@@ -81,15 +81,21 @@ if __name__ == "__main__":
             autor_university.clear()
             autor_university.send_keys("复旦大学")
             autor_university.send_keys(Keys.RETURN)
-            # time.sleep(3) 
-            # download_count=core.download(browse.driver(), browse.name,name)
-            # if download_count is None:
-            #     download_count=0
+            try:
+                WebDriverWait(driver, int(config.WaitTime)).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, "result-table-list"))
+                )
+            except:
+                print("没有找到",name,"的文章")
+                continue
+            download_count=core.download(browse.driver(), browse.name,name)
+            if download_count is None:
+                download_count=0
             print(name,"的文章已经全部收集")
-            # time.sleep(download_count*10)
-        # except:
-        #     print("没有找到复旦大学",name)
-        #     downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
-        #     papers_dir = os.path.join("data",os.path.join(name,'papers'))
-        #     s="move "+downloads_path+"\\* "+papers_dir
-        #     os.system(s)
+            time.sleep(download_count*10)
+        except:
+            print(name,"的文章因为未知原因下载失败")
+            downloads_path = os.path.join(os.environ['USERPROFILE'], 'Downloads')
+            papers_dir = os.path.join("data",os.path.join(name,'papers'))
+            s="move "+downloads_path+"\\* "+papers_dir
+            os.system(s)
